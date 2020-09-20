@@ -30,8 +30,6 @@ resource "linuxbox_docker_container" "cadvisor" {
     var.container_labels,
   )
 
-  log_driver = var.log_driver
-  log_opts   = var.log_opts
 
   restart = "always"
 
@@ -44,5 +42,8 @@ resource "linuxbox_docker_container" "cadvisor" {
   ]
 
   memory = var.cadvisor_memory
+
+  log_driver = local.log_driver
+  log_opts   = local.log_opts
 
 }
