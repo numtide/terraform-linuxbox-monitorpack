@@ -41,56 +41,62 @@ variable "cadvisor_memory" {
 variable "container_labels" {
   type        = map(string)
   description = "Additional labels to add to all containers"
-  default       = {}
+  default     = {}
 }
 
 variable "linuxbox_directory" {
   type        = string
   description = "Directory where all linuxbox related config and state files will be located"
-  default       = "/linuxbox"
+  default     = "/linuxbox"
 }
 
 variable "devops_path_prefix" {
   type        = string
   description = "HTTP path prefix for all devops related services such as Prometheus and Grafana."
-  default       = "/devops-only"
+  default     = "/devops-only"
 }
 
 variable "prometheus_image" {
   type        = string
   description = "Docker image name/tag for the prometheus container, you can use this value to install newer version of the image, or to run a custom image."
-  default       = "prom/prometheus:v2.21.0"
+  default     = "prom/prometheus:v2.21.0"
 }
 
 variable "prometheus_memory" {
   type        = number
   description = "Memory limit for the Docker container. Default is set to a sane value, but can be overriden."
-  default       = 190 * 1024 * 1024
+  default     = 190 * 1024 * 1024
 }
 
 variable "prometheus_node_exporter_image" {
   type        = string
   description = "Docker image name/tag for the prometheus node exporter container, you can use this value to install newer version of the image, or to run a custom image."
-  default       = "prom/node-exporter:v1.0.1"
+  default     = "prom/node-exporter:v1.0.1"
 }
 
 variable "prometheus_docker_sd_image" {
-  type = string
+  type    = string
   default = "stucky/prometheus-docker-sd:latest"
 }
 
 variable "host_name" {
-  type = string
+  type        = string
   description = "FQDN of the host that is used for HTTP URLs"
 }
 
 variable "grafana-image" {
-  type = string
+  type    = string
   default = "grafana/grafana:7.1.5"
 }
 
 variable "grafana_memory" {
-  type = number
+  type        = number
   description = "Memory limit for the Docker container. Default is set to a sane value, but can be overriden."
-  value = 40 * 1024 * 1024
+  value       = 40 * 1024 * 1024
+}
+
+variable "slack_alertmanager_webhook" {
+  type        = string
+  description = "Slack webhook for alerts. If this value is not set, Alertmanager won't be installed"
+  default = null
 }
