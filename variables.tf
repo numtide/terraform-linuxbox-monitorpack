@@ -78,3 +78,13 @@ variable "prometheus_docker_sd_image" {
   type = string
   default = "stucky/prometheus-docker-sd:latest"
 }
+
+variable "host_name" {
+  type = string
+  description = "FQDN of the host that is used for HTTP URLs"
+}
+
+variable "grafana-image" {
+  type = string
+  default = "grafana/grafana:7.1.5"
+}
