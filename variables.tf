@@ -88,3 +88,9 @@ variable "grafana-image" {
   type = string
   default = "grafana/grafana:7.1.5"
 }
+
+variable "grafana_memory" {
+  type = number
+  description = "Memory limit for the Docker container. Default is set to a sane value, but can be overriden."
+  value = 40 * 1024 * 1024
+}

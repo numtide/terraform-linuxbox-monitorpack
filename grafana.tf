@@ -226,7 +226,7 @@ resource "linuxbox_docker_container" "grafana" {
   log_driver = local.log_driver
   log_opts   = local.log_opts
 
-  memory = 40 * 1024 * 1024
+  memory = var.grafana_memory
 }
 
 
