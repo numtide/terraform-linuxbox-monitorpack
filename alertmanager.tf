@@ -73,7 +73,7 @@ resource "linuxbox_docker_container" "alertmanager" {
   ssh_username = var.ssh_username
   host_address = var.ssh_host_address
 
-  image_id = "prom/alertmanager:v0.21.0"
+  image_id = var.alertmanager_image
 
   labels = merge({
     "prometheus-scrape.enabled" = "true"

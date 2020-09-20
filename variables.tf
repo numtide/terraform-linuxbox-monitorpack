@@ -75,8 +75,9 @@ variable "prometheus_node_exporter_image" {
 }
 
 variable "prometheus_docker_sd_image" {
-  type    = string
-  default = "stucky/prometheus-docker-sd:latest"
+  type        = string
+  description = "Docker image name/tag for the prometheus docker sd container, you can use this value to install newer version of the image, or to run a custom image."
+  default     = "stucky/prometheus-docker-sd:latest"
 }
 
 variable "host_name" {
@@ -85,8 +86,9 @@ variable "host_name" {
 }
 
 variable "grafana-image" {
-  type    = string
-  default = "grafana/grafana:7.1.5"
+  type        = string
+  description = "Docker image name/tag for the grafana container, you can use this value to install newer version of the image, or to run a custom image."
+  default     = "grafana/grafana:7.1.5"
 }
 
 variable "grafana_memory" {
@@ -98,5 +100,11 @@ variable "grafana_memory" {
 variable "slack_alertmanager_webhook" {
   type        = string
   description = "Slack webhook for alerts. If this value is not set, Alertmanager won't be installed"
-  default = null
+  default     = null
+}
+
+variable "alertmanager_image" {
+  type        = string
+  description = "Docker image name/tag for the prometheus alert manager container, you can use this value to install newer version of the image, or to run a custom image."
+  value       = "prom/alertmanager:v0.21.0"
 }
