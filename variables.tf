@@ -126,3 +126,15 @@ variable "loki_memory" {
   description = "Memory limit for the Docker container. Default is set to a sane value, but can be overriden."
   default = 40 * 1024 * 1024
 }
+
+variable "critic_image" {
+  type = string
+  description = "Docker image name/tag for the critic docker logging driver, you can use this value to install newer version of the image, or to run a custom image."
+  default = "dmilhdef/critic:v0.3.1"
+}
+
+variable "critic_targets" {
+  type = map(string)
+  description = "Target URLs for critic to watch"
+  default = {}
+}
