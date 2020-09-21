@@ -42,7 +42,7 @@ locals {
               type = "event"
             }
             annotations = {
-              title = "Service [{{ $labels.name }}] is not healthy on ${local.chatbox_full_hostname}"
+              title = "Service [{{ $labels.name }}] is not healthy on ${var.host_name}"
               text  = ""
             }
           },
@@ -59,7 +59,7 @@ locals {
 
 resource "linuxbox_directory" "prometheus" {
   ssh_key      = var.ssh_key
-  ssh_username = var.ssh_username
+  ssh_user     = var.ssh_username
   host_address = var.ssh_host_address
 
   path = "${var.linuxbox_directory}/prometheus"
@@ -67,7 +67,7 @@ resource "linuxbox_directory" "prometheus" {
 
 resource "linuxbox_directory" "prometheus_data" {
   ssh_key      = var.ssh_key
-  ssh_username = var.ssh_username
+  ssh_user     = var.ssh_username
   host_address = var.ssh_host_address
 
   path  = "${linuxbox_directory.prometheus.path}/data"
@@ -77,7 +77,7 @@ resource "linuxbox_directory" "prometheus_data" {
 
 resource "linuxbox_directory" "prometheus_sd" {
   ssh_key      = var.ssh_key
-  ssh_username = var.ssh_username
+  ssh_user     = var.ssh_username
   host_address = var.ssh_host_address
 
   path = "${linuxbox_directory.prometheus.path}/sd"
@@ -85,7 +85,7 @@ resource "linuxbox_directory" "prometheus_sd" {
 
 resource "linuxbox_text_file" "prometheus_config" {
   ssh_key      = var.ssh_key
-  ssh_username = var.ssh_username
+  ssh_user     = var.ssh_username
   host_address = var.ssh_host_address
 
   path    = "${linuxbox_directory.prometheus.path}/prometheus.yml"
@@ -94,7 +94,7 @@ resource "linuxbox_text_file" "prometheus_config" {
 
 resource "linuxbox_text_file" "prometheus_alerting_rules" {
   ssh_key      = var.ssh_key
-  ssh_username = var.ssh_username
+  ssh_user     = var.ssh_username
   host_address = var.ssh_host_address
 
   path    = "${linuxbox_directory.prometheus.path}/alerting.rules.yml"
@@ -107,7 +107,7 @@ resource "linuxbox_docker_container" "prometheus" {
   ]
 
   ssh_key      = var.ssh_key
-  ssh_username = var.ssh_username
+  ssh_user     = var.ssh_username
   host_address = var.ssh_host_address
 
   image_id = var.prometheus_image
@@ -115,8 +115,8 @@ resource "linuxbox_docker_container" "prometheus" {
   labels = merge({
     "traefik.enable"                                            = "true"
     "traefik.http.services.prometheus.loadbalancer.server.port" = "9090"
-    "traefik.http.routers.prometheus.rule"                      = "Host(`${local.chatbox_full_hostname}`) && PathPrefix(`${local.prometheus_path_prefix}`)"
-    "traefik.http.routers.prometheus.tls.certresolver"          = module.traefik.certificate_resolver_name
+    "traefik.http.routers.prometheus.rule"                      = "Host(`${var.host_name}`) && PathPrefix(`${local.prometheus_path_prefix}`)"
+    "traefik.http.routers.prometheus.tls.certresolver"          = var.traefik_certificate_resolver_name
 
     "prometheus-scrape.enabled"      = "true"
     "prometheus-scrape.metrics_path" = "${local.prometheus_path_prefix}/metrics"
@@ -132,11 +132,6 @@ resource "linuxbox_docker_container" "prometheus" {
 
   network = var.docker_network
 
-  env = {
-    GITHUB_OAUTH2_CLIENT_ID     = local.github_oauth2_client_id
-    GITHUB_OAUTH2_CLIENT_SECRET = local.github_oauth2_client_secret
-    JWT_SIGN_SECRET             = local.jwt_sign_secret
-  }
   volumes = [
     "${linuxbox_directory.prometheus_data.path}:/data",
     "${linuxbox_text_file.prometheus_config.path}:/run/secrets/prometheus.yml:ro",
@@ -148,7 +143,7 @@ resource "linuxbox_docker_container" "prometheus" {
   args = [
     "--config.file=/run/secrets/prometheus.yml",
     "--web.enable-admin-api",
-    "--web.external-url=https://${local.chatbox_full_hostname}${local.prometheus_path_prefix}",
+    "--web.external-url=https://${var.host_name}${local.prometheus_path_prefix}",
     "--storage.tsdb.path=/data",
     "--storage.tsdb.retention.time=30d",
   ]

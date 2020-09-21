@@ -90,14 +90,14 @@ locals {
 
 resource "linuxbox_directory" "loki_dir" {
   ssh_key      = var.ssh_key
-  ssh_username = var.ssh_username
+  ssh_user     = var.ssh_username
   host_address = var.ssh_host_address
   path         = "${var.linuxbox_directory}/loki"
 }
 
 resource "linuxbox_directory" "loki_data_dir" {
   ssh_key      = var.ssh_key
-  ssh_username = var.ssh_username
+  ssh_user     = var.ssh_username
   host_address = var.ssh_host_address
   path         = "${linuxbox_directory.loki_dir.path}/data"
 
@@ -108,7 +108,7 @@ resource "linuxbox_directory" "loki_data_dir" {
 
 resource "linuxbox_text_file" "loki_local_config" {
   ssh_key      = var.ssh_key
-  ssh_username = var.ssh_username
+  ssh_user     = var.ssh_username
   host_address = var.ssh_host_address
 
   path    = "${linuxbox_directory.loki_dir.path}/local-config.yaml"
@@ -118,7 +118,7 @@ resource "linuxbox_text_file" "loki_local_config" {
 resource "linuxbox_docker_container" "loki" {
 
   ssh_key      = var.ssh_key
-  ssh_username = var.ssh_username
+  ssh_user     = var.ssh_username
   host_address = var.ssh_host_address
 
   depends_on = [
@@ -146,7 +146,7 @@ resource "linuxbox_docker_container" "loki" {
 
   name = "linuxbox-loki"
 
-  network = linuxbox_docker_network.dockernet.name
+  network = var.docker_network
 
   volumes = [
     "${linuxbox_text_file.loki_local_config.path}:/etc/loki/local-config.yaml:ro",
@@ -161,7 +161,7 @@ resource "linuxbox_docker_container" "loki" {
 
 resource "linuxbox_run_setup" "install_loki_logging_driver" {
   ssh_key      = var.ssh_key
-  ssh_username = var.ssh_username
+  ssh_user     = var.ssh_username
   host_address = var.ssh_host_address
 
   setup = [

@@ -2,7 +2,7 @@
 locals {
   alertmanager_config = {
     global = {
-      slack_api_url = local.netice9_alerts_slack_webhook
+      slack_api_url = var.slack_alertmanager_webhook
     }
     route = {
       receiver        = "slack_event"
@@ -47,7 +47,7 @@ locals {
 resource "linuxbox_directory" "alertmanager" {
   count        = local.alert_manager_count
   ssh_key      = var.ssh_key
-  ssh_username = var.ssh_username
+  ssh_user     = var.ssh_username
   host_address = var.ssh_host_address
 
   path = "${var.linuxbox_directory}/alertmanager"
@@ -56,10 +56,10 @@ resource "linuxbox_directory" "alertmanager" {
 resource "linuxbox_text_file" "alertmanager_config" {
   count        = local.alert_manager_count
   ssh_key      = var.ssh_key
-  ssh_username = var.ssh_username
+  ssh_user     = var.ssh_username
   host_address = var.ssh_host_address
 
-  path    = "${linuxbox_directory.alertmanager.path}/alertmanager.yml"
+  path    = "${linuxbox_directory.alertmanager[0].path}/alertmanager.yml"
   content = yamlencode(local.alertmanager_config)
 }
 
@@ -70,7 +70,7 @@ resource "linuxbox_docker_container" "alertmanager" {
   ]
 
   ssh_key      = var.ssh_key
-  ssh_username = var.ssh_username
+  ssh_user     = var.ssh_username
   host_address = var.ssh_host_address
 
   image_id = var.alertmanager_image
@@ -93,7 +93,7 @@ resource "linuxbox_docker_container" "alertmanager" {
 
 
   volumes = [
-    "${linuxbox_text_file.alertmanager_config.path}:/etc/alertmanager/alertmanager.yml:ro",
+    "${linuxbox_text_file.alertmanager_config[0].path}:/etc/alertmanager/alertmanager.yml:ro",
   ]
 }
 

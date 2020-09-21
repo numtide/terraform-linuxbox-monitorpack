@@ -3,7 +3,7 @@ locals {
 
   grafana_ini = {
     server = {
-      root_url            = "https://${var.hostname}${local.grafana_path_prefix}"
+      root_url            = "https://${var.host_name}${local.grafana_path_prefix}"
       serve_from_sub_path = "true"
     }
 
@@ -16,7 +16,7 @@ locals {
     }
 
     "auth.anonymous" = {
-      enabled  = trie
+      enabled  = true
       org_role = "Viewer"
       # org_role = "Admin"
     }
@@ -43,7 +43,7 @@ locals {
       {
         name      = "prometheus"
         type      = "prometheus"
-        url       = "http://${linuxbox_docker_container.prometheus.name}:9090${prometheus_path_prefix}"
+        url       = "http://${linuxbox_docker_container.prometheus.name}:9090${local.prometheus_path_prefix}"
         access    = "proxy"
         isDefault = "true"
       },
@@ -76,7 +76,7 @@ locals {
 
 resource "linuxbox_directory" "grafana_data_dir" {
   ssh_key      = var.ssh_key
-  ssh_username = var.ssh_username
+  ssh_user     = var.ssh_username
   host_address = var.ssh_host_address
 
   path  = "${linuxbox_directory.grafana_dir.path}/data"
@@ -86,7 +86,7 @@ resource "linuxbox_directory" "grafana_data_dir" {
 
 resource "linuxbox_directory" "grafana_dir" {
   ssh_key      = var.ssh_key
-  ssh_username = var.ssh_username
+  ssh_user     = var.ssh_username
   host_address = var.ssh_host_address
 
   path  = "${var.linuxbox_directory}/grafana"
@@ -97,7 +97,7 @@ resource "linuxbox_directory" "grafana_dir" {
 
 resource "linuxbox_text_file" "grafana_ini" {
   ssh_key      = var.ssh_key
-  ssh_username = var.ssh_username
+  ssh_user     = var.ssh_username
   host_address = var.ssh_host_address
 
   path    = "${linuxbox_directory.grafana_dir.path}/grafana.ini"
@@ -107,7 +107,7 @@ resource "linuxbox_text_file" "grafana_ini" {
 
 resource "linuxbox_text_file" "grafana_datasources_yaml" {
   ssh_key      = var.ssh_key
-  ssh_username = var.ssh_username
+  ssh_user     = var.ssh_username
   host_address = var.ssh_host_address
 
   path    = "${linuxbox_directory.grafana_dir.path}/datasources.yaml"
@@ -116,7 +116,7 @@ resource "linuxbox_text_file" "grafana_datasources_yaml" {
 
 resource "linuxbox_text_file" "grafana_dashboard_providers_yaml" {
   ssh_key      = var.ssh_key
-  ssh_username = var.ssh_username
+  ssh_user     = var.ssh_username
   host_address = var.ssh_host_address
 
   path    = "${linuxbox_directory.grafana_dir.path}/dashboard-providers.yaml"
@@ -126,7 +126,7 @@ resource "linuxbox_text_file" "grafana_dashboard_providers_yaml" {
 
 resource "linuxbox_docker_run" "grafana_install_piechart_plugin" {
   ssh_key      = var.ssh_key
-  ssh_username = var.ssh_username
+  ssh_user     = var.ssh_username
   host_address = var.ssh_host_address
 
   image_id = var.grafana_image
@@ -152,7 +152,7 @@ resource "linuxbox_docker_run" "grafana_install_piechart_plugin" {
 
 resource "linuxbox_docker_run" "grafana_install_statusmap_panel_plugin" {
   ssh_key      = var.ssh_key
-  ssh_username = var.ssh_username
+  ssh_user     = var.ssh_username
   host_address = var.ssh_host_address
 
   image_id = var.grafana_image
@@ -178,7 +178,7 @@ resource "linuxbox_docker_run" "grafana_install_statusmap_panel_plugin" {
 
 resource "linuxbox_docker_container" "grafana" {
   ssh_key      = var.ssh_key
-  ssh_username = var.ssh_username
+  ssh_user     = var.ssh_username
   host_address = var.ssh_host_address
 
   image_id = var.grafana_image
@@ -192,8 +192,8 @@ resource "linuxbox_docker_container" "grafana" {
   labels = merge({
     "traefik.enable"                                         = "true"
     "traefik.http.services.grafana.loadbalancer.server.port" = "3000"
-    "traefik.http.routers.grafana.rule"                      = "Host(`${local.chatbox_full_hostname}`) && PathPrefix(`${local.grafana_path_prefix}`)"
-    "traefik.http.routers.grafana.tls.certresolver"          = module.traefik.certificate_resolver_name
+    "traefik.http.routers.grafana.rule"                      = "Host(`${var.host_name}`) && PathPrefix(`${local.grafana_path_prefix}`)"
+    "traefik.http.routers.grafana.tls.certresolver"          = var.traefik_certificate_resolver_name
     "prometheus-scrape.enabled"                              = "true"
     "prometheus-scrape.port"                                 = "3000"
     },
@@ -232,7 +232,7 @@ resource "linuxbox_docker_container" "grafana" {
 
 resource "linuxbox_directory" "grafana_dashboards_dir" {
   ssh_key      = var.ssh_key
-  ssh_username = var.ssh_username
+  ssh_user     = var.ssh_username
   host_address = var.ssh_host_address
 
   path  = "${linuxbox_directory.grafana_data_dir.path}/dashboards"
@@ -244,7 +244,7 @@ resource "linuxbox_text_file" "grafana_dashboards" {
   for_each = fileset(path.module, "grafana/*.json")
 
   ssh_key      = var.ssh_key
-  ssh_username = var.ssh_username
+  ssh_user     = var.ssh_username
   host_address = var.ssh_host_address
 
   path    = "${linuxbox_directory.grafana_dashboards_dir.path}/${basename(each.key)}"

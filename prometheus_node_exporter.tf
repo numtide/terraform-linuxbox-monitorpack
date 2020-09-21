@@ -4,7 +4,7 @@ resource "linuxbox_docker_container" "node_exporter" {
   ]
 
   ssh_key      = var.ssh_key
-  ssh_username = var.ssh_username
+  ssh_user     = var.ssh_username
   host_address = var.ssh_host_address
 
   image_id = var.prometheus_node_exporter_image
@@ -24,7 +24,7 @@ resource "linuxbox_docker_container" "node_exporter" {
       "prometheus-scrape.enabled" = "true"
       "prometheus-scrape.port"    = "9100"
     },
-    local.container_labels,
+    var.container_labels,
   )
 
   // TODO: add support for pid to linuxbox

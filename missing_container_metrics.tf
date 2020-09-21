@@ -1,7 +1,7 @@
 resource "linuxbox_docker_container" "missing_container_metrics" {
 
   ssh_key      = var.ssh_key
-  ssh_username = var.ssh_username
+  ssh_user     = var.ssh_username
   host_address = var.ssh_host_address
 
   depends_on = [

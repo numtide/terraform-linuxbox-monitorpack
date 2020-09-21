@@ -2,13 +2,13 @@
 # https://github.com/stuckyhm/prometheus-docker-sd
 resource "linuxbox_docker_container" "prometheus-docker-sd" {
   ssh_key      = var.ssh_key
-  ssh_username = var.ssh_username
+  ssh_user     = var.ssh_username
   host_address = var.ssh_host_address
 
   image_id = var.prometheus_docker_sd_image
 
   depends_on = [
-    llinuxbox_run_setup.install_loki_logging_driver,
+    linuxbox_run_setup.install_loki_logging_driver,
   ]
 
 
