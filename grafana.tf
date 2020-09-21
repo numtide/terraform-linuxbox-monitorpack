@@ -248,7 +248,7 @@ resource "linuxbox_text_file" "grafana_dashboards" {
   host_address = var.ssh_host_address
 
   path    = "${linuxbox_directory.grafana_dashboards_dir.path}/${basename(each.key)}"
-  content = file(each.key)
+  content = file("${path.module}/${each.key}")
 
   owner = 472
   group = 472
