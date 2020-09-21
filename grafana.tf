@@ -231,8 +231,9 @@ resource "linuxbox_docker_container" "grafana" {
 
 
 resource "linuxbox_directory" "grafana_dashboards_dir" {
-  host_address = hcloud_server.chatbox.ipv4_address
-  ssh_key      = tls_private_key.ssh_key.private_key_pem
+  ssh_key      = var.ssh_key
+  ssh_username = var.ssh_username
+  host_address = var.ssh_host_address
 
   path  = "${linuxbox_directory.grafana_data_dir.path}/dashboards"
   owner = 472
@@ -242,8 +243,9 @@ resource "linuxbox_directory" "grafana_dashboards_dir" {
 resource "linuxbox_text_file" "grafana_dashboards" {
   for_each = fileset(path.module, "grafana/*.json")
 
-  host_address = hcloud_server.chatbox.ipv4_address
-  ssh_key      = tls_private_key.ssh_key.private_key_pem
+  ssh_key      = var.ssh_key
+  ssh_username = var.ssh_username
+  host_address = var.ssh_host_address
 
   path    = "${linuxbox_directory.grafana_dashboards_dir.path}/${basename(each.key)}"
   content = file(each.key)

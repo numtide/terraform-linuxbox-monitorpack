@@ -8,7 +8,7 @@ resource "linuxbox_docker_container" "prometheus-docker-sd" {
   image_id = var.prometheus_docker_sd_image
 
   depends_on = [
-    linuxbox_run_setup.install_docker,
+    llinuxbox_run_setup.install_loki_logging_driver,
   ]
 
 
