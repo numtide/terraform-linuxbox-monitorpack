@@ -94,7 +94,7 @@ variable "grafana-image" {
 variable "grafana_memory" {
   type        = number
   description = "Memory limit for the Docker container. Default is set to a sane value, but can be overriden."
-  value       = 40 * 1024 * 1024
+  default       = 40 * 1024 * 1024
 }
 
 variable "slack_alertmanager_webhook" {
@@ -106,7 +106,7 @@ variable "slack_alertmanager_webhook" {
 variable "alertmanager_image" {
   type        = string
   description = "Docker image name/tag for the prometheus alert manager container, you can use this value to install newer version of the image, or to run a custom image."
-  value       = "prom/alertmanager:v0.21.0"
+  default       = "prom/alertmanager:v0.21.0"
 }
 
 variable "loki_image" {
