@@ -110,31 +110,43 @@ variable "alertmanager_image" {
 }
 
 variable "loki_image" {
-  type = string
+  type        = string
   description = "Docker image name/tag for the grafana loki container, you can use this value to install newer version of the image, or to run a custom image."
-  default = "grafana/loki:1.6.1"
+  default     = "grafana/loki:1.6.1"
 }
 
 variable "loki_docker_driver_image" {
-  type = string
+  type        = string
   description = "Docker image name/tag for the grafana loki docker logging driver, you can use this value to install newer version of the image, or to run a custom image."
-  default = "grafana/loki-docker-driver:1.6.1"
+  default     = "grafana/loki-docker-driver:1.6.1"
 }
 
 variable "loki_memory" {
-  type = number
+  type        = number
   description = "Memory limit for the Docker container. Default is set to a sane value, but can be overriden."
-  default = 40 * 1024 * 1024
+  default     = 40 * 1024 * 1024
 }
 
 variable "critic_image" {
-  type = string
+  type        = string
   description = "Docker image name/tag for the critic docker logging driver, you can use this value to install newer version of the image, or to run a custom image."
-  default = "dmilhdef/critic:v0.3.1"
+  default     = "dmilhdef/critic:v0.3.1"
 }
 
 variable "critic_targets" {
-  type = map(string)
+  type        = map(string)
   description = "Target URLs for critic to watch"
-  default = {}
+  default     = {}
+}
+
+variable "missing_container_metrics_image" {
+  type        = string
+  description = "Docker image name/tag for the missing container metrics docker logging driver, you can use this value to install newer version of the image, or to run a custom image."
+  default     = "dmilhdef/missing-container-metrics:v0.1.2"
+}
+
+variable "missing_container_metrics_memory" {
+  type        = number
+  description = "Memory limit for the Docker container. Default is set to a sane value, but can be overriden."
+  default     = 8 * 1024 * 1024
 }
