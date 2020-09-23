@@ -57,6 +57,16 @@ locals {
 }
 
 
+locals {
+  prometheus_traefik_auth_labels = merge(
+    { for da in(var.devops_auth != null ? [var.devops_auth] : []) : "traefik.http.middlewares.prometheus-auth.digestauth.users" => "${da.username}:Prometheus:${md5("${da.username}:Prometheus:${da.password}")}" },
+    { for da in(var.devops_auth != null ? [var.devops_auth] : []) : "traefik.http.middlewares.prometheus-auth.digestauth.removeheader" => "true" },
+    { for da in(var.devops_auth != null ? [var.devops_auth] : []) : "traefik.http.middlewares.prometheus-auth.digestauth.realm" => "Prometheus" },
+    { for da in(var.devops_auth != null ? [var.devops_auth] : []) : "traefik.http.routers.prometheus.middlewares" => "prometheus-auth@docker" },
+  )
+}
+
+
 resource "linuxbox_directory" "prometheus" {
   ssh_key      = var.ssh_key
   ssh_user     = var.ssh_username
@@ -124,6 +134,7 @@ resource "linuxbox_docker_container" "prometheus" {
     "config-hash" = sha256(linuxbox_text_file.prometheus_config.content)
     },
     var.container_labels,
+    local.prometheus_traefik_auth_labels,
   )
 
   name = "linuxbox-prometheus"

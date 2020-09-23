@@ -1,3 +1,17 @@
+resource "random_string" "grafana_admin_password" {
+  length  = 16
+  special = false
+}
+
+locals {
+  grafana_traefik_auth_labels = merge(
+    { for da in(var.devops_auth != null ? [var.devops_auth] : []) : "traefik.http.middlewares.grafana-auth.digestauth.users" => "${da.username}:Grafana:${md5("${da.username}:Grafana:${da.password}")}" },
+    { for da in(var.devops_auth != null ? [var.devops_auth] : []) : "traefik.http.middlewares.grafana-auth.digestauth.removeheader" => "true" },
+    { for da in(var.devops_auth != null ? [var.devops_auth] : []) : "traefik.http.middlewares.grafana-auth.digestauth.realm" => "Grafana" },
+    { for da in(var.devops_auth != null ? [var.devops_auth] : []) : "traefik.http.routers.grafana.middlewares" => "grafana-auth@docker" },
+  )
+}
+
 locals {
   grafana_path_prefix = "${var.devops_path_prefix}/grafana"
 
@@ -18,12 +32,11 @@ locals {
     "auth.anonymous" = {
       enabled  = true
       org_role = "Viewer"
-      # org_role = "Admin"
     }
 
     "security" = {
-      admin_user     = "draganm"
-      admin_password = "draganm"
+      admin_user     = "admin"
+      admin_password = random_string.grafana_admin_password.result
     }
   }
 
@@ -196,8 +209,12 @@ resource "linuxbox_docker_container" "grafana" {
     "traefik.http.routers.grafana.tls.certresolver"          = var.traefik_certificate_resolver_name
     "prometheus-scrape.enabled"                              = "true"
     "prometheus-scrape.port"                                 = "3000"
+    "config-hash"                                            = sha256(linuxbox_text_file.grafana_ini.content)
+    "datasources-hash"                                       = sha256(linuxbox_text_file.grafana_datasources_yaml.content)
+    "dashboard-providers-hash"                               = sha256(linuxbox_text_file.grafana_dashboard_providers_yaml.content)
     },
     var.container_labels,
+    local.grafana_traefik_auth_labels,
   )
 
   name = "linuxbox-grafana"

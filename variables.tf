@@ -156,3 +156,12 @@ variable "traefik_certificate_resolver_name" {
   type        = string
   description = "Certificate resolver name for traefik"
 }
+
+variable "devops_auth" {
+  type = object({
+    username = string
+    password = string
+  })
+  description = "Username and password to authenticate the devops user, if set, this will be used for prometheus and grafana"
+  default     = null
+}
