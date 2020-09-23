@@ -77,7 +77,7 @@ variable "prometheus_node_exporter_image" {
 variable "prometheus_docker_sd_image" {
   type        = string
   description = "Docker image name/tag for the prometheus docker sd container, you can use this value to install newer version of the image, or to run a custom image."
-  default     = "stucky/prometheus-docker-sd:latest"
+  default     = "numtide/rs-prometheus-docker-sd:latest"
 }
 
 variable "host_name" {

@@ -1,5 +1,3 @@
-# This is a node project, probably worth investigating writing in go
-# https://github.com/stuckyhm/prometheus-docker-sd
 resource "linuxbox_docker_container" "prometheus-docker-sd" {
   ssh_key      = var.ssh_key
   ssh_user     = var.ssh_username
@@ -18,7 +16,7 @@ resource "linuxbox_docker_container" "prometheus-docker-sd" {
 
   volumes = [
     "/var/run/docker.sock:/var/run/docker.sock",
-    "${linuxbox_directory.prometheus.path}:/prometheus-docker-sd",
+    "${linuxbox_directory.prometheus.path}:/rs-prometheus-docker-sd",
   ]
 
   log_driver = local.log_driver

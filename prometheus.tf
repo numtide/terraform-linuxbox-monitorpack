@@ -9,7 +9,7 @@ locals {
     scrape_configs = [
       {
         job_name        = "docker_service_discovery"
-        file_sd_configs = [{ files = ["/prometheus-docker-sd/docker-targets.json"] }]
+        file_sd_configs = [{ files = ["/rs-prometheus-docker-sd/docker-targets.json"] }]
       },
     ]
 
@@ -136,8 +136,7 @@ resource "linuxbox_docker_container" "prometheus" {
     "${linuxbox_directory.prometheus_data.path}:/data",
     "${linuxbox_text_file.prometheus_config.path}:/run/secrets/prometheus.yml:ro",
     "${linuxbox_text_file.prometheus_alerting_rules.path}:/run/secrets/alerting.rules.yml:ro",
-
-    "${linuxbox_directory.prometheus.path}:/prometheus-docker-sd",
+    "${linuxbox_directory.prometheus.path}:/rs-prometheus-docker-sd",
   ]
 
   args = [
