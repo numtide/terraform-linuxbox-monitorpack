@@ -18,7 +18,7 @@ locals {
         {
           static_configs = [
             {
-              targets = ["alertmanager:9093"]
+              targets = ["linuxbox-alertmanager:9093"]
             },
           ]
         },

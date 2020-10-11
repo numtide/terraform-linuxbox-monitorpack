@@ -82,7 +82,7 @@ resource "linuxbox_docker_container" "alertmanager" {
     var.container_labels,
   )
 
-  name = "linxubox-alertmanager"
+  name = "linuxbox-alertmanager"
 
   restart = "always"
 
